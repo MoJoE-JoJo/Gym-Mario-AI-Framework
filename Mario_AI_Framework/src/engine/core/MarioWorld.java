@@ -291,6 +291,16 @@ public class MarioWorld {
     }
 
     public void update(boolean[] actions) {
+        int[][] observation = getMergedObservation(mario.x, mario.y, 0, 0);
+        for(int y = 0; y<16; y++){
+            for (int x = 0; x<16; x++){
+                System.out.print(observation[y][x]);
+                System.out.print("_");
+            }
+            System.out.println();
+        }
+        System.out.println(mario.x);
+        System.out.println(mario.y);
         if (this.gameStatus != GameStatus.RUNNING) {
             return;
         }
