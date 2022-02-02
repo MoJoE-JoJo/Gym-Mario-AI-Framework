@@ -11,7 +11,7 @@ class MAFEnv(gym.Env):
   gateway = JavaGateway() 
   marioGym = gateway.entry_point
 
-  def __init__(self):
+  def __init__(self, levelFilePath, gameTime):
     super(MAFEnv, self).__init__()
     # Define action and observation space
     # They must be gym.spaces objects
@@ -21,6 +21,7 @@ class MAFEnv(gym.Env):
     self.observation_space = spaces.Box(low=-100, high=100, shape=
                     (16, 16, 1), dtype=np.uint8)
     subprocess.call(['RunJar.bat'])
+    self.marioGym.init(levelFilePath, gameTime, 0)
 
 
   def step(self, action):

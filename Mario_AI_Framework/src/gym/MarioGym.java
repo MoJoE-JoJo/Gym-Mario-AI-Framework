@@ -1,6 +1,7 @@
 package gym;
 
 import engine.core.*;
+import engine.helper.GameStatus;
 import engine.helper.MarioActions;
 import py4j.GatewayServer;
 
@@ -11,11 +12,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MarioGym {
     static String level;
     static int gameSeconds;
+    static int marioState;
+    //static boolean visual;
+    static boolean firstRender = true;
 
     //Visualisation
     static JFrame window = null;
@@ -34,9 +37,9 @@ public class MarioGym {
     static ArrayList<MarioAgentEvent> agentEvents = null;
 
     //Step related
-    static int reward = 0;
-    static float lastXLocation = 0;
-    static long currentTime = 0;
+    static float rewardPos = 0;
+    static int rewardTimePenalty = 0;
+    static int rewardDeathPenalty = 0;
 
 
     public static void main(String[] args) {
@@ -44,24 +47,43 @@ public class MarioGym {
         // app is now the gateway.entry_point
         GatewayServer server = new GatewayServer(gym);
         server.start();
-        System.out.println("Started");
+        System.out.println("Gateway Started");
     }
 
     public static StepReturnType step(boolean left, boolean right, boolean down, boolean speed, boolean jump){
         agentInput(left, right, down, speed, jump);
+        gameUpdate();
         StepReturnType returnVal = new StepReturnType();
-        returnVal.done = false;
-        returnVal.reward = 10;
-        returnVal.state = new int[16][16];
+        //Done value
+        if (world.gameStatus == GameStatus.RUNNING) returnVal.done = false;
+        else returnVal.done = true;
+        //Reward value
+        returnVal.reward = (int) rewardPos + rewardTimePenalty + rewardDeathPenalty;
+        returnVal.reward = Math.max(-15, Math.min(15, returnVal.reward));
+        //State value
+        returnVal.state = world.getMergedObservation(world.mario.x, world.mario.y, 0, 0);
+        //Info values
         returnVal.info = new ArrayList<String>();
         returnVal.info.add("Yolo swaggins");
         return returnVal;
     }
 
-    public static void init(String levelFilePath, int timer, int marioState, boolean visual, int fps, float scale){
+    public static void init(String levelFilePath, int timer, int paramMarioState){
+        level = getLevel(levelFilePath);
+        gameSeconds = timer;
+        marioState = paramMarioState;
+
+        reset();
+        System.out.println("Gym initialised");
+    }
+    /*
+    public static void init(String levelFilePath, int timer, int marioState, boolean visual){
+        level = getLevel(levelFilePath);
+        gameSeconds = timer;
+
         if (visual) {
             window = new JFrame("Mario AI Framework");
-            render = new MarioRender(scale);
+            render = new MarioRender(2);
             window.setContentPane(render);
             window.pack();
             window.setResizable(false);
@@ -73,7 +95,6 @@ public class MarioGym {
         world = new MarioWorld(null);
 
         world.visuals = visual;
-        level = getLevel(levelFilePath);
         world.initializeLevel(level, 1000 * gameSeconds);
         if (visual) {
             world.initializeVisuals(render.getGraphicsConfiguration());
@@ -82,7 +103,6 @@ public class MarioGym {
         world.mario.isFire = marioState > 1;
 
         world.update(new boolean[MarioActions.numberOfActions()]);
-        currentTime = System.currentTimeMillis();
 
         //initialize graphics
         renderTarget = null;
@@ -98,16 +118,104 @@ public class MarioGym {
         agentTimer = new MarioTimer(MarioGame.maxTime);
         agent.initialize(new MarioForwardModel(world.clone()), agentTimer);
 
-        ArrayList<MarioEvent> gameEvents = new ArrayList<>();
-        ArrayList<MarioAgentEvent> agentEvents = new ArrayList<>();
+        gameEvents = new ArrayList<>();
+        agentEvents = new ArrayList<>();
+
+        System.out.println("Gym Reset");
+    }
+    */
+
+    public static void gameUpdate(){
+        if (world.gameStatus == GameStatus.RUNNING) {
+            //System.out.println(currentTime);
+            //get actions
+            agentTimer = new MarioTimer(MarioGame.maxTime);
+            boolean[] actions = agent.getActions(new MarioForwardModel(world.clone()), agentTimer);
+            if (MarioGame.verbose) {
+                if (agentTimer.getRemainingTime() < 0 && Math.abs(agentTimer.getRemainingTime()) > MarioGame.graceTime) {
+                    System.out.println("The Agent is slowing down the game by: "
+                            + Math.abs(agentTimer.getRemainingTime()) + " msec.");
+                }
+            }
+            //Reward info before update
+            int tickBeforeUpdate = world.currentTick;
+            float marioXBeforeUpdate = world.mario.x;
+            // update world
+            world.update(actions);
+            gameEvents.addAll(world.lastFrameEvents);
+            agentEvents.add(new MarioAgentEvent(actions, world.mario.x,
+                    world.mario.y, (world.mario.isLarge ? 1 : 0) + (world.mario.isFire ? 1 : 0),
+                    world.mario.onGround, world.currentTick));
+            //Reward info after update
+            int tickAfterUpdate = world.currentTick;
+            float marioXAfterUpdate = world.mario.x;
+            //Calculate reward components
+            rewardPos = marioXAfterUpdate - marioXBeforeUpdate;
+            rewardTimePenalty = tickBeforeUpdate - tickAfterUpdate;
+            if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -15;
+            else rewardDeathPenalty = 0;
+            System.out.println("Postion reward: " + rewardPos + ", Time reward: " + rewardTimePenalty + ", Death reward: " + rewardDeathPenalty);
+
+        }
+            /*
+            //check if delay needed
+            if (this.getDelay(fps) > 0) {
+                try {
+                    currentTime += this.getDelay(fps);
+                    Thread.sleep(Math.max(0, currentTime - System.currentTimeMillis()));
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+            */
+        //return new MarioResult(this.world, gameEvents, agentEvents);
     }
 
     public static void reset(){
+        agent = new Py4JAgent();
+        world = new MarioWorld(null);
 
+        world.visuals = true;
+        world.initializeLevel(level, 1000 * gameSeconds);
+        world.mario.isLarge = marioState > 0;
+        world.mario.isFire = marioState > 1;
+
+        world.update(new boolean[MarioActions.numberOfActions()]);
+
+        //initialize graphics
+        renderTarget = null;
+        backBuffer = null;
+        currentBuffer = null;
+
+        agentTimer = new MarioTimer(MarioGame.maxTime);
+        agent.initialize(new MarioForwardModel(world.clone()), agentTimer);
+
+        gameEvents = new ArrayList<>();
+        agentEvents = new ArrayList<>();
+
+        System.out.println("Gym Reset");
     }
 
     public static void render(){
-        System.out.println("Render called!");
+        if (firstRender) {
+            window = new JFrame("Mario AI Framework");
+            render = new MarioRender(2);
+            window.setContentPane(render);
+            window.pack();
+            window.setResizable(false);
+            window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            render.init();
+            window.setVisible(true);
+            world.initializeVisuals(render.getGraphicsConfiguration());
+            renderTarget = render.createVolatileImage(MarioGame.width, MarioGame.height);
+            backBuffer = render.getGraphics();
+            currentBuffer = renderTarget.getGraphics();
+            render.addFocusListener(render); //TODO: Maybe not needed
+            firstRender = false;
+
+        }
+
+        render.renderWorld(world, renderTarget, backBuffer, currentBuffer);
     }
 
     public static void playGame(String levelFile, int time, int marioState, boolean visuals){
