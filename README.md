@@ -1,7 +1,7 @@
 # Gym-Mario-AI-Framework
 
 ## Dependencies
-Python Dependencies:
+Python Dependencies for the Gym Environment:
 py4j
 Gym
 

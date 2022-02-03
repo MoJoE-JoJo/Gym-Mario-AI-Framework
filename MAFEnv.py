@@ -10,9 +10,11 @@ class MAFEnv(gym.Env):
   metadata = {'render.modes': ['human']}
   gateway = JavaGateway() 
   marioGym = gateway.entry_point
+  useRender = False
 
-  def __init__(self, levelFilePath, gameTime):
+  def __init__(self, levelFilePath, gameTime, initRender):
     super(MAFEnv, self).__init__()
+    self.useRender = initRender
     # Define action and observation space
     # They must be gym.spaces objects
     # Example when using discrete actions:
@@ -21,7 +23,7 @@ class MAFEnv(gym.Env):
     self.observation_space = spaces.Box(low=-100, high=100, shape=
                     (16, 16, 1), dtype=np.uint8)
     subprocess.call(['RunJar.bat'])
-    self.marioGym.init(levelFilePath, gameTime, 0)
+    self.marioGym.init(levelFilePath, gameTime, 0, self.useRender)
 
 
   def step(self, action):
@@ -32,7 +34,7 @@ class MAFEnv(gym.Env):
 
   def reset(self):
     # Reset the state of the environment to an initial state
-    self.marioGym.reset()
+    self.marioGym.reset(self.useRender)
 
   def render(self, mode='human', close=False):
     # Render the environment to the screen

@@ -23,13 +23,21 @@ from MAFEnv import MAFEnv
 #    print(int_array[i][i])
 #marioGym.reset()
 
-gymgym = MAFEnv("levels/original/lvl-1.txt", 10)
+gymgym = MAFEnv("levels/original/lvl-1.txt", 10, True)
 action = [False, True, False, False, False]
 done = False
-while not done:
-    obs, reward, done, info = gymgym.step(action)
-#print(obs[0][0])
-    print(reward)
-    print(done)
-    print(info[0])
-    #gymgym.render()
+for i in range(100):
+    timestart = time.time()
+    while not done:
+        obs, reward, done, info = gymgym.step(action)
+    #print(obs[0][0])
+        #print(reward)
+        #print(done)
+        #print(info[0])
+        #gymgym.render()
+    print(time.time()-timestart)
+
+    gymgym.reset()
+    done = False
+
+

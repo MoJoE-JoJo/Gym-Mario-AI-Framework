@@ -68,12 +68,23 @@ public class MarioGym {
         return returnVal;
     }
 
-    public static void init(String levelFilePath, int timer, int paramMarioState){
+    public static void init(String levelFilePath, int timer, int paramMarioState, boolean visual){
         level = getLevel(levelFilePath);
         gameSeconds = timer;
         marioState = paramMarioState;
 
-        reset();
+        if (visual) {
+            window = new JFrame("Mario AI Framework");
+            render = new MarioRender(2);
+            window.setContentPane(render);
+            window.pack();
+            window.setResizable(false);
+            window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            render.init();
+            window.setVisible(true);
+        }
+
+        reset(visual);
         System.out.println("Gym initialised");
     }
     /*
@@ -171,12 +182,15 @@ public class MarioGym {
         //return new MarioResult(this.world, gameEvents, agentEvents);
     }
 
-    public static void reset(){
+    public static void reset(boolean visual){
         agent = new Py4JAgent();
         world = new MarioWorld(null);
 
-        world.visuals = true;
+        world.visuals = visual;
         world.initializeLevel(level, 1000 * gameSeconds);
+        if (visual) {
+            world.initializeVisuals(render.getGraphicsConfiguration());
+        }
         world.mario.isLarge = marioState > 0;
         world.mario.isFire = marioState > 1;
 
@@ -186,6 +200,12 @@ public class MarioGym {
         renderTarget = null;
         backBuffer = null;
         currentBuffer = null;
+        if (visual) {
+            renderTarget = render.createVolatileImage(MarioGame.width, MarioGame.height);
+            backBuffer = render.getGraphics();
+            currentBuffer = renderTarget.getGraphics();
+            render.addFocusListener(render); //TODO: Maybe not needed
+        }
 
         agentTimer = new MarioTimer(MarioGame.maxTime);
         agent.initialize(new MarioForwardModel(world.clone()), agentTimer);
@@ -197,6 +217,7 @@ public class MarioGym {
     }
 
     public static void render(){
+        /*
         if (firstRender) {
             window = new JFrame("Mario AI Framework");
             render = new MarioRender(2);
@@ -212,8 +233,8 @@ public class MarioGym {
             currentBuffer = renderTarget.getGraphics();
             render.addFocusListener(render); //TODO: Maybe not needed
             firstRender = false;
-
         }
+        */
 
         render.renderWorld(world, renderTarget, backBuffer, currentBuffer);
     }
