@@ -6,22 +6,26 @@ from py4j.java_gateway import JavaGateway
 
 
 class MAFEnv(gym.Env):
-  """Custom Environment that follows gym interface"""
+  """OpenAI Gym Environment for using the Mario AI Framework"""
   metadata = {'render.modes': ['human']}
   gateway = JavaGateway() 
   marioGym = gateway.entry_point
   useRender = False
 
   def __init__(self, levelFilePath, gameTime, initRender):
+    """
+    Constructs the MAFEnv Gym Environment object.
+    
+    :param levelFilePath: File path pointing to the .txt file containing the level to have the agent play through.
+    
+    :param gameTime: The amount of seconds that the game should be allowed to run for.
+    
+    :param initRender: Whether or not to initialize the renderer. Should be set to True if Render() is to be called, otherwise it can be set to False, and the environment will initialize a little faster.
+    """
     super(MAFEnv, self).__init__()
     self.useRender = initRender
-    # Define action and observation space
-    # They must be gym.spaces objects
-    # Example when using discrete actions:
     self.action_space = spaces.MultiBinary(5)
-    # Example for using image as input:
-    self.observation_space = spaces.Box(low=-100, high=100, shape=
-                    (16, 16, 1), dtype=np.uint8)
+    self.observation_space = spaces.Box(low=-100, high=100, shape=(16, 16, 1), dtype=np.uint8)
     subprocess.call(['RunJar.bat'])
     self.marioGym.init(levelFilePath, gameTime, 0, self.useRender)
 
