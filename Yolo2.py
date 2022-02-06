@@ -23,7 +23,7 @@ from MAFEnv import MAFEnv
 #    print(int_array[i][i])
 #marioGym.reset()
 
-gymgym = MAFEnv("levels/original/lvl-1.txt", 10, True)
+gymgym = MAFEnv("levels/original/lvl-1.txt", 100, True)
 action = [False, True, False, False, False]
 done = False
 for i in range(100):
@@ -34,7 +34,7 @@ for i in range(100):
         #print(reward)
         #print(done)
         #print(info[0])
-        #gymgym.render()
+        gymgym.render()
     print(time.time()-timestart)
 
     gymgym.reset()

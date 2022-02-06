@@ -241,6 +241,7 @@ public class MarioGym {
 
     public static void playGame(String levelFile, int time, int marioState, boolean visuals){
         MarioGame game = new MarioGame();
+        agent = new Py4JAgent();
         printResults(game.runGame(agent, getLevel(levelFile), time, marioState, visuals));
     }
 

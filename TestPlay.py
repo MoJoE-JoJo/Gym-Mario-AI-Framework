@@ -10,7 +10,7 @@ subprocess.call(['RunJar.bat'])
 
 
 def startMarioGym():
-    marioGym.playGame("levels/original/lvl-1.txt", 20, 0, True)
+    marioGym.playGame("levels/original/lvl-15.txt", 20, 0, True)
 
 
 x = threading.Thread(target=startMarioGym)
