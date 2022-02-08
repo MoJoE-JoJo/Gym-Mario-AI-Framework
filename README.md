@@ -2,8 +2,10 @@
 
 ## Dependencies
 Python Dependencies for the Gym Environment:
+
 py4j
-Gym
+
+gym
 
 ## Project versions
 Java 11
