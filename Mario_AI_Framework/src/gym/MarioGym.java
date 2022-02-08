@@ -18,7 +18,6 @@ public class MarioGym {
     static int gameSeconds;
     static int marioState;
     //static boolean visual;
-    static boolean firstRender = true;
 
     //Visualisation
     static JFrame window = null;
