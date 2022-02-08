@@ -1,29 +1,14 @@
 from py4j.java_gateway import JavaGateway
 import time
+import os
 
-from MAFEnv import MAFEnv
-#import subprocess
-#subprocess.call(['java', '-jar', 'Mario_AI_Framework.jar'])
-#from subprocess import *
-#process = Popen(['java', '-jar']+list('Mario_AI_Framework.jar'), stdout=PIPE, stderr=PIPE)
-#import os
-#os.system('java -jar Mario_AI_Framework.jar')
-#import subprocess
-#subprocess.call(['RunJar.bat'])
+from MAFGym.MAFEnv import MAFEnv
+from MAFGym.util import readLevelFile
 
-#gateway = JavaGateway()                   # connect to the JVM
+levelFilePath = os.path.dirname(os.path.realpath(__file__)) + "\\MAFGym\\levels\\original\\lvl-1.txt"
+levelString = readLevelFile(levelFilePath)
 
-#marioGym = gateway.entry_point               # get the AdditionApplication instance
-#LEFT,RIGHT,DOWN,SPEED,JUMP = False,False,False,False,False
-#returnVal = marioGym.step(LEFT,RIGHT,DOWN,SPEED,JUMP)
-
-#int_array = returnVal.getState()
-#info_list = returnVal.getInfo()
-#for i in range(16):
-#    print(int_array[i][i])
-#marioGym.reset()
-
-gymgym = MAFEnv("levels/original/lvl-1.txt", 100, True)
+gymgym = MAFEnv(levelString, 100, True)
 action = [False, True, False, False, False]
 done = False
 for i in range(100):

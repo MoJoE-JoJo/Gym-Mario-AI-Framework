@@ -1,6 +1,7 @@
 package gym;
 
 import engine.core.*;
+import engine.helper.Assets;
 import engine.helper.GameStatus;
 import engine.helper.MarioActions;
 import py4j.GatewayServer;
@@ -67,10 +68,11 @@ public class MarioGym {
         return returnVal;
     }
 
-    public static void init(String levelFilePath, int timer, int paramMarioState, boolean visual){
-        level = getLevel(levelFilePath);
+    public static void init(String paramLevel, String imageDirectory, int timer, int paramMarioState, boolean visual){
+        level = paramLevel;
         gameSeconds = timer;
         marioState = paramMarioState;
+        Assets.img = imageDirectory;
 
         if (visual) {
             window = new JFrame("Mario AI Framework");
@@ -86,54 +88,6 @@ public class MarioGym {
         reset(visual);
         System.out.println("Gym initialised");
     }
-    /*
-    public static void init(String levelFilePath, int timer, int marioState, boolean visual){
-        level = getLevel(levelFilePath);
-        gameSeconds = timer;
-
-        if (visual) {
-            window = new JFrame("Mario AI Framework");
-            render = new MarioRender(2);
-            window.setContentPane(render);
-            window.pack();
-            window.setResizable(false);
-            window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            render.init();
-            window.setVisible(true);
-        }
-        agent = new Py4JAgent();
-        world = new MarioWorld(null);
-
-        world.visuals = visual;
-        world.initializeLevel(level, 1000 * gameSeconds);
-        if (visual) {
-            world.initializeVisuals(render.getGraphicsConfiguration());
-        }
-        world.mario.isLarge = marioState > 0;
-        world.mario.isFire = marioState > 1;
-
-        world.update(new boolean[MarioActions.numberOfActions()]);
-
-        //initialize graphics
-        renderTarget = null;
-        backBuffer = null;
-        currentBuffer = null;
-        if (visual) {
-            renderTarget = render.createVolatileImage(MarioGame.width, MarioGame.height);
-            backBuffer = render.getGraphics();
-            currentBuffer = renderTarget.getGraphics();
-            render.addFocusListener(render); //TODO: Maybe not needed
-        }
-
-        agentTimer = new MarioTimer(MarioGame.maxTime);
-        agent.initialize(new MarioForwardModel(world.clone()), agentTimer);
-
-        gameEvents = new ArrayList<>();
-        agentEvents = new ArrayList<>();
-
-        System.out.println("Gym Reset");
-    }
-    */
 
     public static void gameUpdate(){
         if (world.gameStatus == GameStatus.RUNNING) {

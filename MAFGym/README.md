@@ -14,4 +14,3 @@ Python 3.8
 The project will likely work on other versions as well, but have not been tested on others, as the proejct was developed with these versions.
 
 ## Install Instructions
-Extract the folder MAFGym and past it into your own project

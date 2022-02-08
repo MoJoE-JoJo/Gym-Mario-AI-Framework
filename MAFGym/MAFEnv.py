@@ -3,6 +3,7 @@ from gym import spaces
 import numpy as np
 import subprocess
 from py4j.java_gateway import JavaGateway
+import os
 
 
 class MAFEnv(gym.Env):
@@ -12,11 +13,11 @@ class MAFEnv(gym.Env):
   marioGym = gateway.entry_point
   useRender = False
 
-  def __init__(self, levelFilePath, gameTime, initRender):
+  def __init__(self, levelFile, gameTime, initRender):
     """
     Constructs the MAFEnv Gym Environment object.
     
-    :param levelFilePath: File path pointing to the .txt file containing the level to have the agent play through.
+    :param levelFile: String representing the level.
     
     :param gameTime: The amount of seconds that the game should be allowed to run for.
     
@@ -26,8 +27,10 @@ class MAFEnv(gym.Env):
     self.useRender = initRender
     self.action_space = spaces.MultiBinary(5)
     self.observation_space = spaces.Box(low=-100, high=100, shape=(16, 16, 1), dtype=np.uint8)
-    subprocess.call(['RunJar.bat'])
-    self.marioGym.init(levelFilePath, gameTime, 0, self.useRender)
+    print(os.path.dirname(os.path.realpath(__file__)))
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    subprocess.call([current_dir + '\\RunJar.bat'])
+    self.marioGym.init(levelFile, current_dir + "\\img\\", gameTime, 0, self.useRender)
 
 
   def step(self, action):
