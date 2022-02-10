@@ -41,7 +41,8 @@ class MAFEnv(gym.Env):
 
   def reset(self):
     # Reset the state of the environment to an initial state
-    self.marioGym.reset(self.useRender)
+    returnVal = self.marioGym.reset(self.useRender)
+    return returnVal.getState()
 
   def render(self, mode='human', close=False):
     # Render the environment to the screen
