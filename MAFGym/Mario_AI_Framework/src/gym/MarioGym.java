@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MarioGym {
     static String level;
@@ -63,8 +64,8 @@ public class MarioGym {
         //State value
         returnVal.state = world.getMergedObservation(world.mario.x, world.mario.y, 0, 0);
         //Info values
-        returnVal.info = new ArrayList<String>();
-        returnVal.info.add("Yolo swaggins");
+        returnVal.info = new HashMap<>();
+        returnVal.info.put("Yolo","Swaggins");
         return returnVal;
     }
 
@@ -172,7 +173,7 @@ public class MarioGym {
         returnVal.done = false;
         returnVal.reward = 0;
         returnVal.state = world.getMergedObservation(world.mario.x, world.mario.y, 0, 0);
-        returnVal.info = new ArrayList<String>();
+        returnVal.info = new HashMap<>();
         return returnVal;
     }
 

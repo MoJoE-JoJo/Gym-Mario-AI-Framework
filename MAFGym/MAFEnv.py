@@ -26,7 +26,7 @@ class MAFEnv(gym.Env):
     super(MAFEnv, self).__init__()
     self.useRender = initRender
     self.action_space = spaces.MultiBinary(5)
-    self.observation_space = spaces.Box(low=-100, high=100, shape=(16, 16, 1), dtype=np.uint8)
+    self.observation_space = spaces.Box(low=-100, high=100, shape=(16, 16), dtype=np.uint8)
     print(os.path.dirname(os.path.realpath(__file__)))
     current_dir = os.path.dirname(os.path.realpath(__file__))
     subprocess.call([current_dir + '\\RunJar.bat'])
@@ -35,7 +35,7 @@ class MAFEnv(gym.Env):
 
   def step(self, action):
     # Execute one time step within the environment
-    LEFT,RIGHT,DOWN,SPEED,JUMP = action[0], action[1], action[2], action[3], action[4]
+    LEFT,RIGHT,DOWN,SPEED,JUMP = bool(action[0]), bool(action[1]), bool(action[2]), bool(action[3]), bool(action[4])
     returnVal = self.marioGym.step(LEFT,RIGHT,DOWN,SPEED,JUMP)
     return returnVal.getState(), returnVal.getReward(), returnVal.getDone(), returnVal.getInfo()
 

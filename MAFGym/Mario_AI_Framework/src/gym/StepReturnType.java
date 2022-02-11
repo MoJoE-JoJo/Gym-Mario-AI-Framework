@@ -1,12 +1,13 @@
 package gym;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class StepReturnType {
     int[][] state;
     int reward;
     boolean done;
-    List<String> info;
+    HashMap<String,String> info;
 
     public int[][] getState(){
         return state;
@@ -20,7 +21,7 @@ public class StepReturnType {
         return done;
     }
 
-    public List<String> getInfo(){
+    public HashMap<String,String> getInfo(){
         return info;
     }
 }
