@@ -37,12 +37,26 @@ class MAFEnv(gym.Env):
     # Execute one time step within the environment
     LEFT,RIGHT,DOWN,SPEED,JUMP = bool(action[0]), bool(action[1]), bool(action[2]), bool(action[3]), bool(action[4])
     returnVal = self.marioGym.step(LEFT,RIGHT,DOWN,SPEED,JUMP)
-    return returnVal.getState(), returnVal.getReward(), returnVal.getDone(), returnVal.getInfo()
+    javaState = returnVal.getState()
+    state = np.empty(shape=(16,16))
+    state.fill(0)
+    for i in range(16):
+      for j in range(16):
+        state[i][j] = javaState[i][j]
+    javaDict = returnVal.getInfo()
+    dict = {"Yolo": javaDict.get("Yolo")}
+    return state, returnVal.getReward(), returnVal.getDone(), dict
 
   def reset(self):
     # Reset the state of the environment to an initial state
     returnVal = self.marioGym.reset(self.useRender)
-    return returnVal.getState()
+    javaState = returnVal.getState()
+    state = np.empty(shape=(16,16))
+    state.fill(0)
+    for i in range(16):
+      for j in range(16):
+        state[i][j] = javaState[i][j]
+    return state
 
   def render(self, mode='human', close=False):
     # Render the environment to the screen
