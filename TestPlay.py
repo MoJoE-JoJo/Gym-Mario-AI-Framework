@@ -2,15 +2,16 @@ import subprocess
 from py4j.java_gateway import JavaGateway
 import threading
 import keyboard
+from MAFGym.util import readLevelFile
+from MAFGym.MAFEnv import MAFEnv
+import os
 
 gateway = JavaGateway() 
 marioGym = gateway.entry_point
-subprocess.call(['RunJar.bat'])
-
-
+subprocess.call(['MAFGym/RunJar.bat'])
 
 def startMarioGym():
-    marioGym.playGame("levels/original/lvl-15.txt", 20, 0, True)
+    marioGym.playGame("MAFGym/levels/original/lvl-1.txt", 20, 0, True)
 
 
 x = threading.Thread(target=startMarioGym)

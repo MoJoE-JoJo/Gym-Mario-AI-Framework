@@ -5,6 +5,8 @@ import subprocess
 from py4j.java_gateway import JavaGateway
 import os
 
+import numpy
+from numpy  import array
 
 class MAFEnv(gym.Env):
   """OpenAI Gym Environment for using the Mario AI Framework"""
@@ -38,11 +40,19 @@ class MAFEnv(gym.Env):
     LEFT,RIGHT,DOWN,SPEED,JUMP = bool(action[0]), bool(action[1]), bool(action[2]), bool(action[3]), bool(action[4])
     returnVal = self.marioGym.step(LEFT,RIGHT,DOWN,SPEED,JUMP)
     javaState = returnVal.getState()
-    state = np.empty(shape=(16,16))
-    state.fill(0)
-    for i in range(16):
-      for j in range(16):
-        state[i][j] = javaState[i][j]
+    state = np.frombuffer(javaState, dtype=np.int32)
+    state = state.reshape((16, 16))
+    #state = array(array(javaState))
+    #print(javaState.getClass())
+    #state = np.empty(shape=(16,16))
+    #state.fill(0)
+    #for i in range(16):
+    #  for j in range(16):
+    #    state[i][j] = javaState[i][j]
+    #state = list(javaState)
+    #for line in state:
+    #  line = list(line)
+    #print(state)
     javaDict = returnVal.getInfo()
     dict = {"Yolo": javaDict.get("Yolo")}
     return state, returnVal.getReward(), returnVal.getDone(), dict
@@ -51,11 +61,13 @@ class MAFEnv(gym.Env):
     # Reset the state of the environment to an initial state
     returnVal = self.marioGym.reset(self.useRender)
     javaState = returnVal.getState()
-    state = np.empty(shape=(16,16))
-    state.fill(0)
-    for i in range(16):
-      for j in range(16):
-        state[i][j] = javaState[i][j]
+    state = np.frombuffer(javaState, dtype=np.int32)
+    state = state.reshape((16, 16))
+    #state = np.empty(shape=(16,16))
+    #state.fill(0)
+    #for i in range(16):
+    #  for j in range(16):
+    #    state[i][j] = javaState[i][j]
     return state
 
   def render(self, mode='human', close=False):

@@ -65,6 +65,8 @@ public class MarioGym {
         returnVal.state = world.getMergedObservation(world.mario.x, world.mario.y, 0, 0);
         //Info values
         returnVal.info = new HashMap<>();
+        if(world.gameStatus == GameStatus.WIN) returnVal.info.put("Result", "Win");
+        else if (world.gameStatus == GameStatus.LOSE) returnVal.info.put("Result", "Lose");
         returnVal.info.put("Yolo","Swaggins");
         return returnVal;
     }
@@ -200,10 +202,10 @@ public class MarioGym {
         render.renderWorld(world, renderTarget, backBuffer, currentBuffer);
     }
 
-    public static void playGame(String levelFile, int time, int marioState, boolean visuals){
+    public static void playGame(String level, int time, int marioState, boolean visuals){
         MarioGame game = new MarioGame();
         agent = new Py4JAgent();
-        printResults(game.runGame(agent, getLevel(levelFile), time, marioState, visuals));
+        printResults(game.runGame(agent, level, time, marioState, visuals));
     }
 
     public static void agentInput(boolean left, boolean right, boolean down, boolean speed, boolean jump){
