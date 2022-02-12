@@ -42,6 +42,8 @@ public class MarioGym {
     static int rewardTimePenalty = 0;
     static int rewardDeathPenalty = 0;
 
+    static int winLooseReward = 15;
+
 
     public static void main(String[] args) {
         MarioGym gym = new MarioGym();
@@ -60,7 +62,7 @@ public class MarioGym {
         else returnVal.done = true;
         //Reward value
         returnVal.reward = (int) rewardPos + rewardTimePenalty + rewardDeathPenalty;
-        returnVal.reward = Math.max(-15, Math.min(15, returnVal.reward));
+        returnVal.reward = Math.max(-winLooseReward, Math.min(winLooseReward, returnVal.reward));
         //State value
         returnVal.state = world.getMergedObservation(world.mario.x, world.mario.y, 0, 0);
         //Info values
@@ -119,9 +121,10 @@ public class MarioGym {
             //Calculate reward components
             rewardPos = marioXAfterUpdate - marioXBeforeUpdate;
             rewardTimePenalty = tickBeforeUpdate - tickAfterUpdate;
-            if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -15;
+            if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
+            else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward;
             else rewardDeathPenalty = 0;
-            System.out.println("Postion reward: " + rewardPos + ", Time reward: " + rewardTimePenalty + ", Death reward: " + rewardDeathPenalty);
+            //System.out.println("Postion reward: " + rewardPos + ", Time reward: " + rewardTimePenalty + ", Death reward: " + rewardDeathPenalty);
 
         }
     }
