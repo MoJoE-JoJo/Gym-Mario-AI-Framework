@@ -124,18 +124,6 @@ public class MarioGym {
             System.out.println("Postion reward: " + rewardPos + ", Time reward: " + rewardTimePenalty + ", Death reward: " + rewardDeathPenalty);
 
         }
-            /*
-            //check if delay needed
-            if (this.getDelay(fps) > 0) {
-                try {
-                    currentTime += this.getDelay(fps);
-                    Thread.sleep(Math.max(0, currentTime - System.currentTimeMillis()));
-                } catch (InterruptedException e) {
-                    break;
-                }
-            }
-            */
-        //return new MarioResult(this.world, gameEvents, agentEvents);
     }
 
     public static StepReturnType reset(boolean visual){
@@ -211,6 +199,10 @@ public class MarioGym {
     public static void agentInput(boolean left, boolean right, boolean down, boolean speed, boolean jump){
         boolean[] actions = new boolean[]{left, right, down, speed, jump};
         agent.setActions(actions);
+    }
+
+    public static void setLevel(String levelParam){
+        level = levelParam;
     }
 
     private static String getLevel(String filepath) {
