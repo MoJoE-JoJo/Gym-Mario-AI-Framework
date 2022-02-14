@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Mario_AI_Framework2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/MAFGym/Mario_AI_Framework/out/artifacts/MarioGym_jar/Mario_AI_Framework.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
