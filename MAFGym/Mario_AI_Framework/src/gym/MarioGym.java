@@ -43,6 +43,10 @@ public class MarioGym {
     static int rewardDeathPenalty = 0;
 
     static int winLooseReward = 15;
+    static int sceneDetail = 0;
+    static int enemyDetail = 0;
+
+    static int totalReward = 0;
 
 
     public static void main(String[] args) {
@@ -70,14 +74,17 @@ public class MarioGym {
         if(world.gameStatus == GameStatus.WIN) returnVal.info.put("Result", "Win");
         else if (world.gameStatus == GameStatus.LOSE) returnVal.info.put("Result", "Lose");
         returnVal.info.put("Yolo","Swaggins");
+        totalReward += returnVal.reward;
         return returnVal;
     }
 
-    public static void init(String paramLevel, String imageDirectory, int timer, int paramMarioState, boolean visual){
+    public static void init(String paramLevel, String imageDirectory, int timer, int paramMarioState, boolean visual, int paramSceneDetail, int paramEnemyDetail){
         level = paramLevel;
         gameSeconds = timer;
         marioState = paramMarioState;
         Assets.img = imageDirectory;
+        sceneDetail = paramSceneDetail;
+        enemyDetail = paramEnemyDetail;
 
         if (visual) {
             window = new JFrame("Mario AI Framework");
@@ -160,12 +167,13 @@ public class MarioGym {
         gameEvents = new ArrayList<>();
         agentEvents = new ArrayList<>();
 
-        System.out.println("Gym Reset");
+        System.out.println("Gym Reset : Return=" + totalReward);
+        totalReward = 0;
 
         StepReturnType returnVal = new StepReturnType();
         returnVal.done = false;
         returnVal.reward = 0;
-        returnVal.state = world.getMergedObservation(world.mario.x, world.mario.y, 0, 0);
+        returnVal.state = world.getMergedObservation(world.mario.x, world.mario.y, sceneDetail, enemyDetail);
         returnVal.info = new HashMap<>();
         return returnVal;
     }
