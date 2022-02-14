@@ -68,7 +68,7 @@ public class MarioGym {
         returnVal.reward = (int) rewardPos + rewardTimePenalty + rewardDeathPenalty;
         returnVal.reward = Math.max(-winLooseReward, Math.min(winLooseReward, returnVal.reward));
         //State value
-        returnVal.state = world.getMergedObservation(world.mario.x, world.mario.y, 0, 0);
+        returnVal.state = world.getMergedObservation(world.mario.x, world.mario.y, sceneDetail, enemyDetail);
         //Info values
         returnVal.info = new HashMap<>();
         if(world.gameStatus == GameStatus.WIN) returnVal.info.put("Result", "Win");
