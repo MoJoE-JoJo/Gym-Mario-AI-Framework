@@ -75,6 +75,7 @@ public class MarioGym {
         else if (world.gameStatus == GameStatus.LOSE) returnVal.info.put("Result", "Lose");
         returnVal.info.put("Yolo","Swaggins");
         totalReward += returnVal.reward;
+        returnVal.info.put("ReturnScore", String.valueOf(totalReward));
         return returnVal;
     }
 
