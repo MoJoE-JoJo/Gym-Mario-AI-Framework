@@ -27,9 +27,9 @@ public class MarioGymManager {
         System.out.println("Gateway Started");
     }
 
-    public static void initGym(String paramLevel, String imageDirectory, int timer, int paramMarioState, boolean visual){
+    public static void initGym(int gymID,String paramLevel, String imageDirectory, int timer, int paramMarioState, boolean visual){
         MarioGym newGym = new MarioGym();
-        newGym.init(paramLevel, imageDirectory, timer, paramMarioState, visual);
+        newGym.init(gymID, paramLevel, imageDirectory, timer, paramMarioState, visual);
         gyms.add(newGym);
     }
 

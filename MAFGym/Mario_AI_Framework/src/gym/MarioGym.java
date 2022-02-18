@@ -48,6 +48,8 @@ public class MarioGym {
 
     int totalReward = 0;
 
+    int gymID = 0;
+
     /*
     public static void main(String[] args) {
         MarioGym gym = new MarioGym();
@@ -80,7 +82,8 @@ public class MarioGym {
         return returnVal;
     }
 
-    public void init(String paramLevel, String imageDirectory, int timer, int paramMarioState, boolean visual){
+    public void init(int id,String paramLevel, String imageDirectory, int timer, int paramMarioState, boolean visual){
+        gymID = id;
         level = paramLevel;
         gameSeconds = timer;
         marioState = paramMarioState;
@@ -169,7 +172,7 @@ public class MarioGym {
         gameEvents = new ArrayList<>();
         agentEvents = new ArrayList<>();
 
-        System.out.println("Gym Reset : Return=" + totalReward);
+        System.out.println("Gym Reset : ID=" + gymID + " : Return=" + totalReward);
         totalReward = 0;
 
         StepReturnType returnVal = new StepReturnType();
