@@ -20,7 +20,7 @@ for i in range(100):
         #print(reward)
         #print(done)
         #print(info[0])
-        #gymgym.render()
+        gymgym.render()
     print(time.time()-timestart)
 
     gymgym.reset()

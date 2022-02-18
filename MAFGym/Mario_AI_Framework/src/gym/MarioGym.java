@@ -68,7 +68,7 @@ public class MarioGym {
         returnVal.reward = (int) rewardPos + rewardTimePenalty + rewardDeathPenalty;
         returnVal.reward = Math.max(-winLooseReward, Math.min(winLooseReward, returnVal.reward));
         //State value
-        returnVal.state = world.getMergedObservation(world.mario.x, world.mario.y, sceneDetail, enemyDetail);
+        returnVal.state = world.getOneHotObservation(world.mario.x, world.mario.y);
         //Info values
         returnVal.info = new HashMap<>();
         if(world.gameStatus == GameStatus.WIN) returnVal.info.put("Result", "Win");
@@ -174,31 +174,12 @@ public class MarioGym {
         StepReturnType returnVal = new StepReturnType();
         returnVal.done = false;
         returnVal.reward = 0;
-        returnVal.state = world.getMergedObservation(world.mario.x, world.mario.y, sceneDetail, enemyDetail);
+        returnVal.state = world.getOneHotObservation(world.mario.x, world.mario.y);
         returnVal.info = new HashMap<>();
         return returnVal;
     }
 
     public static void render(){
-        /*
-        if (firstRender) {
-            window = new JFrame("Mario AI Framework");
-            render = new MarioRender(2);
-            window.setContentPane(render);
-            window.pack();
-            window.setResizable(false);
-            window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            render.init();
-            window.setVisible(true);
-            world.initializeVisuals(render.getGraphicsConfiguration());
-            renderTarget = render.createVolatileImage(MarioGame.width, MarioGame.height);
-            backBuffer = render.getGraphics();
-            currentBuffer = renderTarget.getGraphics();
-            render.addFocusListener(render); //TODO: Maybe not needed
-            firstRender = false;
-        }
-        */
-
         render.renderWorld(world, renderTarget, backBuffer, currentBuffer);
     }
 
