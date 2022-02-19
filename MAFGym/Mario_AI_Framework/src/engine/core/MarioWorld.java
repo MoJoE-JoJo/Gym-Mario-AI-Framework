@@ -267,25 +267,25 @@ public class MarioWorld {
                 }
                 switch(MarioForwardModel.getBlockValueGeneralization(this.level.getBlock(x, y), sceneDetail)){
                     case MarioForwardModel.OBS_SOLID:
-                        ret[obsX][obsY][0] = 1;
+                        ret[obsX][obsY][0] = 255;
                         break;
                     case MarioForwardModel.OBS_CANNON:
-                        ret[obsX][obsY][1] = 1;
+                        ret[obsX][obsY][1] = 255;
                         break;
                     case MarioForwardModel.OBS_PIPE:
-                        ret[obsX][obsY][2] = 1;
+                        ret[obsX][obsY][2] = 255;
                         break;
                     case MarioForwardModel.OBS_BRICK:
-                        ret[obsX][obsY][3] = 1;
+                        ret[obsX][obsY][3] = 255;
                         break;
                     case MarioForwardModel.OBS_QUESTION_BLOCK:
-                        ret[obsX][obsY][4] = 1;
+                        ret[obsX][obsY][4] = 255;
                         break;
                     case MarioForwardModel.OBS_COIN:
-                        ret[obsX][obsY][5] = 1;
+                        ret[obsX][obsY][5] = 255;
                         break;
                     case MarioForwardModel.OBS_PLATFORM:
-                        ret[obsX][obsY][6] = 1;
+                        ret[obsX][obsY][6] = 255;
                         break;
                 }
             }
@@ -306,16 +306,16 @@ public class MarioWorld {
                 if (tmp != SpriteType.NONE.getValue()) {
                     switch(tmp){
                         case MarioForwardModel.OBS_FIREBALL:
-                            ret[obsX][obsY][7] = 1;
+                            ret[obsX][obsY][7] = 255;
                             break;
                         case MarioForwardModel.OBS_SPECIAL_ITEM:
-                            ret[obsX][obsY][8] = 1;
+                            ret[obsX][obsY][8] = 255;
                             break;
                         case MarioForwardModel.OBS_STOMPABLE_ENEMY:
-                            ret[obsX][obsY][9] = 1;
+                            ret[obsX][obsY][9] = 255;
                             break;
                         case MarioForwardModel.OBS_NONSTOMPABLE_ENEMY:
-                            ret[obsX][obsY][10] = 1;
+                            ret[obsX][obsY][10] = 255;
                             break;
                     }
                 }

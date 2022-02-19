@@ -18,7 +18,7 @@ gym7 = MAFEnv([levelString], 100, True)
 gym8 = MAFEnv([levelString], 100, True)
 gym9 = MAFEnv([levelString], 100, True)
 gym10 = MAFEnv([levelString], 100, True)
-gyms = {gym1, gym2, gym3, gym4, gym5, gym6, gym7, gym8, gym9, gym10}
+gyms = {gym1, gym2}
 
 action = [False, True, False, False, False]
 done = False
