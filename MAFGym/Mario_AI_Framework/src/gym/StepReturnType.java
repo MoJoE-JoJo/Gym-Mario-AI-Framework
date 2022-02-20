@@ -13,13 +13,13 @@ public class StepReturnType {
 
     public byte[] getState(){
         // Set up a ByteBuffer called intBuffer
-        ByteBuffer intBuffer = ByteBuffer.allocate(4*4*16*16); // 4 bytes in an int
+        ByteBuffer intBuffer = ByteBuffer.allocate(4*16*16*1); // 4 bytes in an int
         intBuffer.order(ByteOrder.LITTLE_ENDIAN); // Java's default is big-endian
 
         // Copy ints from intArray into intBuffer as bytes
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++){
-                for (int k = 0; k < 16; k++){
+                for (int k = 0; k < 1; k++){
                     intBuffer.putInt(state[i][j][k]);
                 }
             }

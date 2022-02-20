@@ -61,7 +61,7 @@ public class MarioGym {
     */
 
     private int[][][] getObservation(){
-        return world.getMergedTimeObservation(world.mario.x, world.mario.y);
+        return world.getMergedObservation3(world.mario.x, world.mario.y, 1, 1);
     }
 
     public StepReturnType step(boolean left, boolean right, boolean down, boolean speed, boolean jump){
@@ -73,7 +73,7 @@ public class MarioGym {
         else returnVal.done = true;
         //Reward value
         returnVal.reward = (int) rewardPos + rewardTimePenalty + rewardDeathPenalty;
-        returnVal.reward = Math.max(-winLooseReward, Math.min(winLooseReward, returnVal.reward));
+        returnVal.reward = Math.max(-winLooseReward, Math.min(winLooseReward*10, returnVal.reward));
         //State value
         returnVal.state = getObservation();
         //Info values
@@ -138,7 +138,7 @@ public class MarioGym {
             rewardPos = marioXAfterUpdate - marioXBeforeUpdate;
             rewardTimePenalty = tickBeforeUpdate - tickAfterUpdate;
             if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
-            else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward;
+            else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*10;
             else rewardDeathPenalty = 0;
             //System.out.println("Postion reward: " + rewardPos + ", Time reward: " + rewardTimePenalty + ", Death reward: " + rewardDeathPenalty);
 
@@ -176,7 +176,7 @@ public class MarioGym {
         gameEvents = new ArrayList<>();
         agentEvents = new ArrayList<>();
 
-        System.out.println("Gym Reset : ID=" + gymID + " : Return=" + totalReward);
+        System.out.println("Gym Reset : ID=" + gymID + " : Win=" + (world.gameStatus == GameStatus.WIN ? "W" : "F")  + " : Return=" + totalReward);
         totalReward = 0;
 
         StepReturnType returnVal = new StepReturnType();
