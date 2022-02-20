@@ -146,6 +146,7 @@ public class MarioGym {
     }
 
     public StepReturnType reset(boolean visual){
+        boolean won = world.gameStatus == GameStatus.WIN;
         agent = new Py4JAgent();
         world = new MarioWorld(null);
 
@@ -176,7 +177,7 @@ public class MarioGym {
         gameEvents = new ArrayList<>();
         agentEvents = new ArrayList<>();
 
-        System.out.println("Gym Reset : ID=" + gymID + " : Win=" + (world.gameStatus == GameStatus.WIN ? "W" : "F")  + " : Return=" + totalReward);
+        System.out.println("Gym Reset : ID=" + gymID + " : Win=" + (won ? "W" : "F")  + " : Return=" + totalReward);
         totalReward = 0;
 
         StepReturnType returnVal = new StepReturnType();
