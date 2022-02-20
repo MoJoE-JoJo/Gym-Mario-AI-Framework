@@ -60,6 +60,10 @@ public class MarioGym {
     }
     */
 
+    private int[][][] getObservation(){
+        return world.getMergedTimeObservation(world.mario.x, world.mario.y);
+    }
+
     public StepReturnType step(boolean left, boolean right, boolean down, boolean speed, boolean jump){
         agentInput(left, right, down, speed, jump);
         gameUpdate();
@@ -71,7 +75,7 @@ public class MarioGym {
         returnVal.reward = (int) rewardPos + rewardTimePenalty + rewardDeathPenalty;
         returnVal.reward = Math.max(-winLooseReward, Math.min(winLooseReward, returnVal.reward));
         //State value
-        returnVal.state = world.getOneHotObservation(world.mario.x, world.mario.y);
+        returnVal.state = getObservation();
         //Info values
         returnVal.info = new HashMap<>();
         if(world.gameStatus == GameStatus.WIN) returnVal.info.put("Result", "Win");
@@ -178,7 +182,7 @@ public class MarioGym {
         StepReturnType returnVal = new StepReturnType();
         returnVal.done = false;
         returnVal.reward = 0;
-        returnVal.state = world.getOneHotObservation(world.mario.x, world.mario.y);
+        returnVal.state = getObservation();
         returnVal.info = new HashMap<>();
         return returnVal;
     }

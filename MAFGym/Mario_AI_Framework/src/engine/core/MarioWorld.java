@@ -240,10 +240,65 @@ public class MarioWorld {
         return ret;
     }
 
+    int[][][] observations = new int[4][16][16];
+
+    public int[][][] getMergedTimeObservation(float centerX, float centerY){
+        int sceneDetail = 1;
+        int enemiesDetail = 1;
+
+        int[][] ret = new int[MarioGame.tileWidth][MarioGame.tileHeight];
+        int centerXInMap = (int) centerX / 16;
+        int centerYInMap = (int) centerY / 16;
+
+        for (int y = centerYInMap - MarioGame.tileHeight / 2, obsY = 0; y < centerYInMap + MarioGame.tileHeight / 2; y++, obsY++) {
+            for (int x = centerXInMap - MarioGame.tileWidth / 2, obsX = 0; x < centerXInMap + MarioGame.tileWidth / 2; x++, obsX++) {
+                int currentX = x;
+                if (currentX < 0) {
+                    currentX = 0;
+                }
+                if (currentX > level.tileWidth - 1) {
+                    currentX = level.tileWidth - 1;
+                }
+                int currentY = y;
+                if (currentY < 0) {
+                    currentY = 0;
+                }
+                if (currentY > level.tileHeight - 1) {
+                    currentY = level.tileHeight - 1;
+                }
+                ret[obsX][obsY] = MarioForwardModel.getBlockValueGeneralization(this.level.getBlock(x, y), sceneDetail);
+            }
+        }
+
+        for (MarioSprite sprite : sprites) {
+            if (sprite.type == SpriteType.MARIO)
+                continue;
+            if (sprite.getMapX() >= 0 &&
+                    sprite.getMapX() > centerXInMap - MarioGame.tileWidth / 2 &&
+                    sprite.getMapX() < centerXInMap + MarioGame.tileWidth / 2 &&
+                    sprite.getMapY() >= 0 &&
+                    sprite.getMapY() > centerYInMap - MarioGame.tileHeight / 2 &&
+                    sprite.getMapY() < centerYInMap + MarioGame.tileHeight / 2) {
+                int obsX = sprite.getMapX() - centerXInMap + MarioGame.tileWidth / 2;
+                int obsY = sprite.getMapY() - centerYInMap + MarioGame.tileHeight / 2;
+                int tmp = MarioForwardModel.getSpriteTypeGeneralization(sprite.type, enemiesDetail);
+                if (tmp != SpriteType.NONE.getValue()) {
+                    ret[obsX][obsY] = tmp;
+                }
+            }
+        }
+        observations[0] = observations[1];
+        observations[1] = observations[2];
+        observations[2] = observations[3];
+        observations[3] = ret;
+
+        return observations;
+    }
+
     public int[][][] getOneHotObservation(float centerX, float centerY){
         int sceneDetail = 1;
         int enemiesDetail = 1;
-        int channelNumber = 11;
+        int channelNumber = 12;
 
         int[][][] ret = new int[MarioGame.tileWidth][MarioGame.tileHeight][channelNumber];
         int centerXInMap = (int) centerX / 16;
@@ -292,8 +347,8 @@ public class MarioWorld {
         }
 
         for (MarioSprite sprite : sprites) {
-            if (sprite.type == SpriteType.MARIO)
-                continue;
+            //if (sprite.type == SpriteType.MARIO)
+            //    continue;
             if (sprite.getMapX() >= 0 &&
                     sprite.getMapX() > centerXInMap - MarioGame.tileWidth / 2 &&
                     sprite.getMapX() < centerXInMap + MarioGame.tileWidth / 2 &&
@@ -318,6 +373,55 @@ public class MarioWorld {
                             ret[obsX][obsY][10] = 255;
                             break;
                     }
+                }
+                if (sprite.type == SpriteType.MARIO){
+                    ret[obsX][obsY][11] = 255;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    public int[][][] getMergedObservation3(float centerX, float centerY, int sceneDetail, int enemiesDetail) {
+        int[][][] ret = new int[MarioGame.tileWidth][MarioGame.tileHeight][1];
+        int centerXInMap = (int) centerX / 16;
+        int centerYInMap = (int) centerY / 16;
+
+        for (int y = centerYInMap - MarioGame.tileHeight / 2, obsY = 0; y < centerYInMap + MarioGame.tileHeight / 2; y++, obsY++) {
+            for (int x = centerXInMap - MarioGame.tileWidth / 2, obsX = 0; x < centerXInMap + MarioGame.tileWidth / 2; x++, obsX++) {
+                int currentX = x;
+                if (currentX < 0) {
+                    currentX = 0;
+                }
+                if (currentX > level.tileWidth - 1) {
+                    currentX = level.tileWidth - 1;
+                }
+                int currentY = y;
+                if (currentY < 0) {
+                    currentY = 0;
+                }
+                if (currentY > level.tileHeight - 1) {
+                    currentY = level.tileHeight - 1;
+                }
+                ret[obsX][obsY][0] = MarioForwardModel.getBlockValueGeneralization(this.level.getBlock(x, y), sceneDetail);
+            }
+        }
+
+        for (MarioSprite sprite : sprites) {
+            if (sprite.type == SpriteType.MARIO)
+                continue;
+            if (sprite.getMapX() >= 0 &&
+                    sprite.getMapX() > centerXInMap - MarioGame.tileWidth / 2 &&
+                    sprite.getMapX() < centerXInMap + MarioGame.tileWidth / 2 &&
+                    sprite.getMapY() >= 0 &&
+                    sprite.getMapY() > centerYInMap - MarioGame.tileHeight / 2 &&
+                    sprite.getMapY() < centerYInMap + MarioGame.tileHeight / 2) {
+                int obsX = sprite.getMapX() - centerXInMap + MarioGame.tileWidth / 2;
+                int obsY = sprite.getMapY() - centerYInMap + MarioGame.tileHeight / 2;
+                int tmp = MarioForwardModel.getSpriteTypeGeneralization(sprite.type, enemiesDetail);
+                if (tmp != SpriteType.NONE.getValue()) {
+                    ret[obsX][obsY][0] = tmp;
                 }
             }
         }
