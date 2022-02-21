@@ -33,8 +33,8 @@ public class MarioGymManager {
         gyms.add(newGym);
     }
 
-    public static StepReturnType step(int gymID, boolean left, boolean right, boolean down, boolean speed, boolean jump){
-        return gyms.get(gymID).step(left, right, down, speed, jump);
+    public static StepReturnType step(int gymID, int number){
+        return gyms.get(gymID).step(number);
     }
 
     public static StepReturnType reset(int gymID, boolean visual){

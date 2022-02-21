@@ -64,8 +64,114 @@ public class MarioGym {
         return world.getMergedObservation3(world.mario.x, world.mario.y, 1, 1);
     }
 
-    public StepReturnType step(boolean left, boolean right, boolean down, boolean speed, boolean jump){
-        agentInput(left, right, down, speed, jump);
+    private boolean[] convertAgentInput(int number){
+        boolean[] agentInput;
+        switch (number){
+            case 0:
+                agentInput = new boolean[] {false, false, false, false, false};
+                break;
+            case 1:
+                agentInput = new boolean[] {false, false, false, false, true};
+                break;
+            case 2:
+                agentInput = new boolean[] {false, false, false, true, false};
+                break;
+            case 3:
+                agentInput = new boolean[] {false, false, false, true, true};
+                break;
+            case 4:
+                agentInput = new boolean[] {false, false, true, false, false};
+                break;
+            case 5:
+                agentInput = new boolean[] {false, false, true, false, true};
+                break;
+            case 6:
+                agentInput = new boolean[] {false, false, true, true, false};
+                break;
+            case 7:
+                agentInput = new boolean[] {false, false, true, true, true};
+                break;
+            case 8:
+                agentInput = new boolean[] {false, true, false, false, false};
+                break;
+            case 9:
+                agentInput = new boolean[] {false, true, false, false, true};
+                break;
+            case 10:
+                agentInput = new boolean[] {false, true, false, true, false};
+                break;
+            case 11:
+                agentInput = new boolean[] {false, true, false, true, true};
+                break;
+            case 12:
+                agentInput = new boolean[] {false, true, true, false, false};
+                break;
+            case 13:
+                agentInput = new boolean[] {false, true, true, false, true};
+                break;
+            case 14:
+                agentInput = new boolean[] {false, true, true, true, false};
+                break;
+            case 15:
+                agentInput = new boolean[] {false, true, true, true, true};
+                break;
+            case 16:
+                agentInput = new boolean[] {true, false, false, false, false};
+                break;
+            case 17:
+                agentInput = new boolean[] {true, false, false, false, true};
+                break;
+            case 18:
+                agentInput = new boolean[] {true, false, false, true, false};
+                break;
+            case 19:
+                agentInput = new boolean[] {true, false, false, true, true};
+                break;
+            case 20:
+                agentInput = new boolean[] {true, false, true, false, false};
+                break;
+            case 21:
+                agentInput = new boolean[] {true, false, true, false, true};
+                break;
+            case 22:
+                agentInput = new boolean[] {true, false, true, true, false};
+                break;
+            case 23:
+                agentInput = new boolean[] {true, false, true, true, true};
+                break;
+            case 24:
+                agentInput = new boolean[] {true, true, false, false, false};
+                break;
+            case 25:
+                agentInput = new boolean[] {true, true, false, false, true};
+                break;
+            case 26:
+                agentInput = new boolean[] {true, true, false, true, false};
+                break;
+            case 27:
+                agentInput = new boolean[] {true, true, false, true, true};
+                break;
+            case 28:
+                agentInput = new boolean[] {true, true, true, false, false};
+                break;
+            case 29:
+                agentInput = new boolean[] {true, true, true, false, true};
+                break;
+            case 30:
+                agentInput = new boolean[] {true, true, true, true, false};
+                break;
+            case 31:
+                agentInput = new boolean[] {true, true, true, true, true};
+                break;
+            default:
+                agentInput = new boolean[] {false, false, false, false, false};
+        }
+        return agentInput;
+    }
+
+    public StepReturnType step(int number){
+        boolean[] input = convertAgentInput(number);
+        agentInput(input[0],input[1],input[2],input[3],input[4]);
         gameUpdate();
         StepReturnType returnVal = new StepReturnType();
         //Done value
@@ -146,7 +252,8 @@ public class MarioGym {
     }
 
     public StepReturnType reset(boolean visual){
-        boolean won = world.gameStatus == GameStatus.WIN;
+        boolean won = false;
+        if(world != null)  won = (world.gameStatus == GameStatus.WIN);
         agent = new Py4JAgent();
         world = new MarioWorld(null);
 
