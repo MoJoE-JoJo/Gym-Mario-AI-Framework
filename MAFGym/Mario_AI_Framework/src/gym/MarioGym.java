@@ -226,6 +226,10 @@ public class MarioGym {
                 return reward2();
             case 3:
                 return reward3();
+            case 4:
+                return reward4();
+            case 5:
+                return reward5();
             default:
                 return rewardOriginal();
         }
@@ -369,6 +373,28 @@ public class MarioGym {
         else rewardDeathPenalty = 0;
 
         float reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
+        reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
+
+        return reward;
+    }
+
+    public float reward5(){
+        //same as original, except no time penalty
+        float rewardPos = 0;
+        int rewardDeathPenalty = 0;
+
+        int winLooseReward = 15;
+        int winMultiplier = 10;
+
+        float newMarioX = world.mario.x;
+        rewardPos = newMarioX - lastMarioX;
+        lastMarioX = newMarioX;
+
+        if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
+        else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
+        else rewardDeathPenalty = 0;
+
+        float reward = rewardPos + rewardDeathPenalty;
         reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
 
         return reward;
