@@ -38,20 +38,14 @@ public class MarioGym {
     ArrayList<MarioAgentEvent> agentEvents = null;
 
     //Step related
-    float rewardPos = 0;
-    float rewardPosClip = 15;
-    int rewardTimePenalty = 0;
-    int rewardDeathPenalty = 0;
-
-
-    int winLooseReward = 200;
-    int winMultiplier = 5;
     int sceneDetail = 0;
     int enemyDetail = 0;
 
+    float rewardCombined = 0.0f;
     float totalReward = 0.0f;
 
     //boolean updateReward = false;
+    int rewardFunction = 0;
     int lastRewardMark = 0;
     float lastMarioX = 0;
     int gymID = 0;
@@ -184,8 +178,7 @@ public class MarioGym {
         if (world.gameStatus == GameStatus.RUNNING) returnVal.done = false;
         else returnVal.done = true;
         //Reward value
-        returnVal.reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
-        returnVal.reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, returnVal.reward));
+        returnVal.reward = rewardCombined;
         //State value
         returnVal.state = getObservation();
         //Info values
@@ -198,8 +191,9 @@ public class MarioGym {
         return returnVal;
     }
 
-    public void init(int id,String paramLevel, String imageDirectory, int timer, int paramMarioState, boolean visual){
+    public void init(int id,String paramLevel, String imageDirectory, int timer, int paramMarioState, boolean visual, int paramRewardFunction){
         gymID = id;
+        rewardFunction = paramRewardFunction;
         level = paramLevel;
         gameSeconds = timer;
         marioState = paramMarioState;
@@ -220,6 +214,133 @@ public class MarioGym {
 
         reset(visual);
         System.out.println("Gym initialised");
+    }
+
+    public float reward(int index){
+        switch (index){
+            case 0:
+                return rewardOriginal();
+            case 1:
+                return reward1();
+            case 2:
+                return reward2();
+            case 3:
+                return reward3();
+            default:
+                return rewardOriginal();
+        }
+    }
+
+    public float rewardOriginal(){
+        float rewardPos = 0;
+        int rewardTimePenalty = 0;
+        int rewardDeathPenalty = 0;
+
+        int winLooseReward = 15;
+        int winMultiplier = 10;
+
+        float newMarioX = world.mario.x;
+        rewardPos = newMarioX - lastMarioX;
+        lastMarioX = newMarioX;
+        rewardTimePenalty = -1;
+
+        if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
+        else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
+        else rewardDeathPenalty = 0;
+
+        float reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
+        reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
+
+        return reward;
+    }
+
+    public float reward1(){
+        float rewardPos = 0;
+        float rewardPosClip = 15;
+        int rewardTimePenalty = 0;
+        int rewardDeathPenalty = 0;
+
+        int winLooseReward = 200;
+        int winMultiplier = 5;
+
+        if(world.currentTick - lastRewardMark == 30){
+            lastRewardMark = world.currentTick;
+            float newMarioX = world.mario.x;
+            rewardPos = newMarioX - lastMarioX;
+            rewardPos = Math.max(-rewardPosClip, Math.min(rewardPosClip, rewardPos));
+            lastMarioX = newMarioX;
+            rewardTimePenalty = -1;
+        }
+        else{
+            rewardPos = 0.0f;
+            rewardTimePenalty = 0;
+        }
+
+        if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
+        else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
+        else rewardDeathPenalty = 0;
+
+        float reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
+        reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
+
+        return reward;
+    }
+
+    public float reward2(){
+        //Same as original, but time penalty is scaled to be smaller, and add up to -1 over one second
+        float rewardPos = 0;
+        float rewardTimePenalty = 0;
+        int rewardDeathPenalty = 0;
+
+        int winLooseReward = 15;
+        int winMultiplier = 20;
+
+        float newMarioX = world.mario.x;
+        rewardPos = newMarioX - lastMarioX;
+        lastMarioX = newMarioX;
+        rewardTimePenalty = ((-1f)/30f);
+
+        if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
+        else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
+        else rewardDeathPenalty = 0;
+
+        float reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
+        reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
+
+        return reward;
+    }
+
+    public float reward3(){
+        //Same as reward2, but with smaller death penalties
+        float rewardPos = 0;
+        float rewardPosClip = 15;
+        int rewardTimePenalty = 0;
+        int rewardDeathPenalty = 0;
+
+        int winLooseReward = 25;
+        int winMultiplier = 20;
+
+        if(world.currentTick - lastRewardMark == 30){
+            lastRewardMark = world.currentTick;
+            float newMarioX = world.mario.x;
+            rewardPos = newMarioX - lastMarioX;
+            rewardPos = Math.max(-rewardPosClip, Math.min(rewardPosClip, rewardPos));
+            lastMarioX = newMarioX;
+            rewardTimePenalty = -1;
+        }
+        else{
+            rewardPos = 0.0f;
+            rewardTimePenalty = 0;
+        }
+
+        if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
+        else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
+        else rewardDeathPenalty = 0;
+
+        float reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
+        reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
+
+        return reward;
     }
 
     public void gameUpdate(){
@@ -247,27 +368,11 @@ public class MarioGym {
                     world.mario.onGround, world.currentTick));
 
             //Reward info after update
-            if(world.currentTick - lastRewardMark == 30){
-                lastRewardMark = world.currentTick;
-                float newMarioX = world.mario.x;
-                rewardPos = newMarioX - lastMarioX;
-                rewardPos = Math.max(-rewardPosClip, Math.min(rewardPosClip, rewardPos));
-                lastMarioX = newMarioX;
-                rewardTimePenalty = -1;
-            }
-            else{
-                rewardPos = 0.0f;
-                rewardTimePenalty = 0;
-            }
+            rewardCombined = reward(rewardFunction);
             //System.out.println("Tick:" + world.currentTick + " : Pos:" + rewardPos + " : Total:" + totalReward);
-            int tickAfterUpdate = world.currentTick;
-            float marioXAfterUpdate = world.mario.x;
             //Calculate reward components
             //rewardPos = marioXAfterUpdate - marioXBeforeUpdate;
             //rewardTimePenalty = tickBeforeUpdate - tickAfterUpdate;
-            if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
-            else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
-            else rewardDeathPenalty = 0;
             //System.out.println("Postion reward: " + rewardPos + ", Time reward: " + rewardTimePenalty + ", Death reward: " + rewardDeathPenalty);
 
         }
