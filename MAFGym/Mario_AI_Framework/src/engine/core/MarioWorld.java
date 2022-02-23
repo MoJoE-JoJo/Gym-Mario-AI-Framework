@@ -480,6 +480,7 @@ public class MarioWorld {
     }
 
     public void update(boolean[] actions) {
+        //System.out.println(currentTick);
         /*
         int[][] observation = getMergedObservation(mario.x, mario.y, 0, 0);
         for(int y = 0; y<16; y++){

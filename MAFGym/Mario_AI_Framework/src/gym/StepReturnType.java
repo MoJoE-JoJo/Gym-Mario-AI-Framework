@@ -7,7 +7,7 @@ import java.util.List;
 
 public class StepReturnType {
     int[][][] state;
-    int reward;
+    float reward;
     boolean done;
     HashMap<String,String> info;
 
@@ -29,7 +29,7 @@ public class StepReturnType {
         return byteArray;
     }
 
-    public int getReward(){
+    public float getReward(){
         return reward;
     }
 

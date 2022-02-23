@@ -39,15 +39,21 @@ public class MarioGym {
 
     //Step related
     float rewardPos = 0;
+    float rewardPosClip = 15;
     int rewardTimePenalty = 0;
     int rewardDeathPenalty = 0;
 
-    int winLooseReward = 15;
+
+    int winLooseReward = 200;
+    int winMultiplier = 5;
     int sceneDetail = 0;
     int enemyDetail = 0;
 
-    int totalReward = 0;
+    float totalReward = 0.0f;
 
+    //boolean updateReward = false;
+    int lastRewardMark = 0;
+    float lastMarioX = 0;
     int gymID = 0;
 
     /*
@@ -178,8 +184,8 @@ public class MarioGym {
         if (world.gameStatus == GameStatus.RUNNING) returnVal.done = false;
         else returnVal.done = true;
         //Reward value
-        returnVal.reward = (int) rewardPos + rewardTimePenalty + rewardDeathPenalty;
-        returnVal.reward = Math.max(-winLooseReward, Math.min(winLooseReward*10, returnVal.reward));
+        returnVal.reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
+        returnVal.reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, returnVal.reward));
         //State value
         returnVal.state = getObservation();
         //Info values
@@ -229,22 +235,38 @@ public class MarioGym {
                 }
             }
             //Reward info before update
-            int tickBeforeUpdate = world.currentTick;
-            float marioXBeforeUpdate = world.mario.x;
+            //int tickBeforeUpdate = world.currentTick;
+            //float marioXBeforeUpdate = world.mario.x;
+
+
             // update world
             world.update(actions);
             gameEvents.addAll(world.lastFrameEvents);
             agentEvents.add(new MarioAgentEvent(actions, world.mario.x,
                     world.mario.y, (world.mario.isLarge ? 1 : 0) + (world.mario.isFire ? 1 : 0),
                     world.mario.onGround, world.currentTick));
+
             //Reward info after update
+            if(world.currentTick - lastRewardMark == 30){
+                lastRewardMark = world.currentTick;
+                float newMarioX = world.mario.x;
+                rewardPos = newMarioX - lastMarioX;
+                rewardPos = Math.max(-rewardPosClip, Math.min(rewardPosClip, rewardPos));
+                lastMarioX = newMarioX;
+                rewardTimePenalty = -1;
+            }
+            else{
+                rewardPos = 0.0f;
+                rewardTimePenalty = 0;
+            }
+            //System.out.println("Tick:" + world.currentTick + " : Pos:" + rewardPos + " : Total:" + totalReward);
             int tickAfterUpdate = world.currentTick;
             float marioXAfterUpdate = world.mario.x;
             //Calculate reward components
-            rewardPos = marioXAfterUpdate - marioXBeforeUpdate;
-            rewardTimePenalty = tickBeforeUpdate - tickAfterUpdate;
+            //rewardPos = marioXAfterUpdate - marioXBeforeUpdate;
+            //rewardTimePenalty = tickBeforeUpdate - tickAfterUpdate;
             if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
-            else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*10;
+            else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
             else rewardDeathPenalty = 0;
             //System.out.println("Postion reward: " + rewardPos + ", Time reward: " + rewardTimePenalty + ", Death reward: " + rewardDeathPenalty);
 
@@ -286,6 +308,9 @@ public class MarioGym {
 
         System.out.println("Gym Reset : ID=" + gymID + " : Win=" + (won ? "W" : "F")  + " : Return=" + totalReward);
         totalReward = 0;
+
+        lastRewardMark = 0;
+        lastMarioX = world.mario.x;
 
         StepReturnType returnVal = new StepReturnType();
         returnVal.done = false;
