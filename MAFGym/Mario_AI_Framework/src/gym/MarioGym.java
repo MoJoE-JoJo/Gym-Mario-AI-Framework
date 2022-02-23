@@ -343,6 +343,37 @@ public class MarioGym {
         return reward;
     }
 
+    public float reward4(){
+        //same as original, except the time penalty is only applied one time each second
+        float rewardPos = 0;
+        int rewardTimePenalty = 0;
+        int rewardDeathPenalty = 0;
+
+        int winLooseReward = 15;
+        int winMultiplier = 10;
+
+        if(world.currentTick - lastRewardMark == 30){
+            lastRewardMark = world.currentTick;
+            rewardTimePenalty = -1;
+        }
+        else{
+            rewardTimePenalty = 0;
+        }
+
+        float newMarioX = world.mario.x;
+        rewardPos = newMarioX - lastMarioX;
+        lastMarioX = newMarioX;
+
+        if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
+        else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
+        else rewardDeathPenalty = 0;
+
+        float reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
+        reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
+
+        return reward;
+    }
+
     public void gameUpdate(){
         if (world.gameStatus == GameStatus.RUNNING) {
             //System.out.println(currentTime);
