@@ -232,6 +232,8 @@ public class MarioGym {
                 return reward5();
             case 6:
                 return reward6();
+            case 7:
+                return reward7();
             default:
                 return rewardOriginal();
         }
