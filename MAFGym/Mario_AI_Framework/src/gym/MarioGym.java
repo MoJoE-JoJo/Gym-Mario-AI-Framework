@@ -230,6 +230,8 @@ public class MarioGym {
                 return reward4();
             case 5:
                 return reward5();
+            case 6:
+                return reward6();
             default:
                 return rewardOriginal();
         }
@@ -291,7 +293,7 @@ public class MarioGym {
     }
 
     public float reward2(){
-        //Same as original, but time penalty is scaled to be smaller, and add up to -1 over one second
+        //Same as original, but time penalty is scaled to be smaller, and add up to -1 over one second, and win reward is larger
         float rewardPos = 0;
         float rewardTimePenalty = 0;
         int rewardDeathPenalty = 0;
@@ -315,7 +317,7 @@ public class MarioGym {
     }
 
     public float reward3(){
-        //Same as reward2, but with smaller death penalties
+        //Same as reward1, but with smaller death penalties and smaller win reward
         float rewardPos = 0;
         float rewardPosClip = 15;
         int rewardTimePenalty = 0;
@@ -395,6 +397,39 @@ public class MarioGym {
         else rewardDeathPenalty = 0;
 
         float reward = rewardPos + rewardDeathPenalty;
+        reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
+
+        return reward;
+    }
+
+    public float reward6(){
+        //Same as reward3, but with bigger win reward
+        float rewardPos = 0;
+        float rewardPosClip = 15;
+        int rewardTimePenalty = 0;
+        int rewardDeathPenalty = 0;
+
+        int winLooseReward = 25;
+        int winMultiplier = 40;
+
+        if(world.currentTick - lastRewardMark == 30){
+            lastRewardMark = world.currentTick;
+            float newMarioX = world.mario.x;
+            rewardPos = newMarioX - lastMarioX;
+            rewardPos = Math.max(-rewardPosClip, Math.min(rewardPosClip, rewardPos));
+            lastMarioX = newMarioX;
+            rewardTimePenalty = -1;
+        }
+        else{
+            rewardPos = 0.0f;
+            rewardTimePenalty = 0;
+        }
+
+        if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
+        else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
+        else rewardDeathPenalty = 0;
+
+        float reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
         reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
 
         return reward;
