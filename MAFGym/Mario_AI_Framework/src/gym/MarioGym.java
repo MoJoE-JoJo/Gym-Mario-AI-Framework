@@ -234,6 +234,10 @@ public class MarioGym {
                 return reward6();
             case 7:
                 return reward7();
+            case 8:
+                return reward8();
+            case 9:
+                return reward9();
             default:
                 return rewardOriginal();
         }
@@ -446,6 +450,72 @@ public class MarioGym {
 
         int winLooseReward = 25;
         int winMultiplier = 20;
+
+        if(world.currentTick - lastRewardMark == 30){
+            lastRewardMark = world.currentTick;
+            float newMarioX = world.mario.x;
+            rewardPos = newMarioX - lastMarioX;
+            rewardPos = Math.max(-rewardPosClip, Math.min(rewardPosClip, rewardPos));
+            lastMarioX = newMarioX;
+            rewardTimePenalty = -1;
+        }
+        else{
+            rewardPos = 0.0f;
+            rewardTimePenalty = 0;
+        }
+
+        if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
+        else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
+        else rewardDeathPenalty = 0;
+
+        float reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
+        reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
+
+        return reward;
+    }
+
+    public float reward8(){
+        //Same as reward8, but with larger movement cliprange and larger win reward, cliprange reward half of compounded reward in original
+        float rewardPos = 0;
+        float rewardPosClip = 15*15;
+        int rewardTimePenalty = 0;
+        int rewardDeathPenalty = 0;
+
+        int winLooseReward = 25;
+        int winMultiplier = 40;
+
+        if(world.currentTick - lastRewardMark == 30){
+            lastRewardMark = world.currentTick;
+            float newMarioX = world.mario.x;
+            rewardPos = newMarioX - lastMarioX;
+            rewardPos = Math.max(-rewardPosClip, Math.min(rewardPosClip, rewardPos));
+            lastMarioX = newMarioX;
+            rewardTimePenalty = -1;
+        }
+        else{
+            rewardPos = 0.0f;
+            rewardTimePenalty = 0;
+        }
+
+        if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
+        else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
+        else rewardDeathPenalty = 0;
+
+        float reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
+        reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
+
+        return reward;
+    }
+
+    public float reward9(){
+        //Same as reward8, but with larger movement cliprange, compounded reward equal to original
+        float rewardPos = 0;
+        float rewardPosClip = 15*30;
+        int rewardTimePenalty = 0;
+        int rewardDeathPenalty = 0;
+
+        int winLooseReward = 25;
+        int winMultiplier = 40;
 
         if(world.currentTick - lastRewardMark == 30){
             lastRewardMark = world.currentTick;
