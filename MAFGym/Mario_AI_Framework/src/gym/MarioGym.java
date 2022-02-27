@@ -42,6 +42,7 @@ public class MarioGym {
     int enemyDetail = 0;
 
     float rewardCombined = 0.0f;
+    int currentCheckpoint = 0;
     float totalReward = 0.0f;
 
     //boolean updateReward = false;
@@ -238,6 +239,10 @@ public class MarioGym {
                 return reward8();
             case 9:
                 return reward9();
+            case 10:
+                return reward10();
+            case 11:
+                return reward11();
             default:
                 return rewardOriginal();
         }
@@ -475,7 +480,7 @@ public class MarioGym {
     }
 
     public float reward8(){
-        //Same as reward8, but with larger movement cliprange and larger win reward, cliprange reward half of compounded reward in original
+        //Same as reward7, but with larger movement cliprange and larger win reward, cliprange reward half of compounded reward in original
         float rewardPos = 0;
         float rewardPosClip = 15*15;
         int rewardTimePenalty = 0;
@@ -529,6 +534,78 @@ public class MarioGym {
             rewardPos = 0.0f;
             rewardTimePenalty = 0;
         }
+
+        if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
+        else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
+        else rewardDeathPenalty = 0;
+
+        float reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
+        reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
+
+        return reward;
+    }
+
+    public float reward10(){
+        //checkpoint based rewards, 10 checkpoints, large win reward, time penalty every second
+        int checkPoints = 10;
+        int checkPointReward = 150;
+        float rewardPos = 0;
+        int rewardTimePenalty = 0;
+        int rewardDeathPenalty = 0;
+
+        int winLooseReward = 15;
+        int winMultiplier = 50;
+
+        if(world.currentTick - lastRewardMark == 30){
+            lastRewardMark = world.currentTick;
+            rewardTimePenalty = -1;
+        }
+        else{
+            rewardTimePenalty = 0;
+        }
+
+        lastMarioX = world.mario.x;
+        if (lastMarioX > (currentCheckpoint+1)/checkPoints * world.level.exitTileX*16){
+            currentCheckpoint++;
+            rewardPos = checkPointReward;
+        }
+
+
+        if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
+        else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
+        else rewardDeathPenalty = 0;
+
+        float reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
+        reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
+
+        return reward;
+    }
+
+    public float reward11(){
+        //checkpoint based rewards, 20 checkpoints, large win reward, time penalty every second
+        int checkPoints = 20;
+        int checkPointReward = 150;
+        float rewardPos = 0;
+        int rewardTimePenalty = 0;
+        int rewardDeathPenalty = 0;
+
+        int winLooseReward = 15;
+        int winMultiplier = 50;
+
+        if(world.currentTick - lastRewardMark == 30){
+            lastRewardMark = world.currentTick;
+            rewardTimePenalty = -1;
+        }
+        else{
+            rewardTimePenalty = 0;
+        }
+
+        lastMarioX = world.mario.x;
+        if (lastMarioX > (currentCheckpoint+1)/checkPoints * world.level.exitTileX*16){
+            currentCheckpoint++;
+            rewardPos = checkPointReward;
+        }
+
 
         if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
         else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
@@ -610,7 +687,7 @@ public class MarioGym {
 
         System.out.println("Gym Reset : ID=" + gymID + " : Win=" + (won ? "W" : "F")  + " : Return=" + totalReward);
         totalReward = 0;
-
+        currentCheckpoint = 0;
         lastRewardMark = 0;
         lastMarioX = world.mario.x;
 
