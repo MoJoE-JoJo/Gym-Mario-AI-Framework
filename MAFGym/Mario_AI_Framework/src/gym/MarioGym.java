@@ -565,7 +565,7 @@ public class MarioGym {
         }
 
         lastMarioX = world.mario.x;
-        if (lastMarioX > (currentCheckpoint+1)/checkPoints * world.level.exitTileX*16){
+        if (lastMarioX > (float)(currentCheckpoint+1)/checkPoints * world.level.exitTileX*16){
             currentCheckpoint++;
             rewardPos = checkPointReward;
         }
