@@ -565,6 +565,9 @@ public class MarioGym {
         }
 
         lastMarioX = world.mario.x;
+        //Should be >= if 10 checkpoints are wanted, with only > it never hits the last checkpoint, as that last checkpoint is on the win-tile
+        //It is probably fine still, as the checkpoints are still spaced with 10% of the level apart, and the last checkpoint
+        //then doubles as both a checkpoint and as goal, and conceptually goal is kinda fine as a final checkpoint
         if (lastMarioX > (float)(currentCheckpoint+1)/checkPoints * world.level.exitTileX*16){
             currentCheckpoint++;
             rewardPos = checkPointReward;
@@ -601,7 +604,7 @@ public class MarioGym {
         }
 
         lastMarioX = world.mario.x;
-        if (lastMarioX > (currentCheckpoint+1)/checkPoints * world.level.exitTileX*16){
+        if (lastMarioX > (float)(currentCheckpoint+1)/checkPoints * world.level.exitTileX*16){
             currentCheckpoint++;
             rewardPos = checkPointReward;
         }
