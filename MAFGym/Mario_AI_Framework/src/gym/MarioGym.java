@@ -620,6 +620,46 @@ public class MarioGym {
         return reward;
     }
 
+    public float reward12(){
+        //same as 10 but larger death penalty
+        int checkPoints = 10;
+        int checkPointReward = 150;
+        float rewardPos = 0;
+        int rewardTimePenalty = 0;
+        int rewardDeathPenalty = 0;
+
+        int winLooseReward = 250;
+        int winMultiplier = 3;
+
+        if(world.currentTick - lastRewardMark == 30){
+            lastRewardMark = world.currentTick;
+            rewardTimePenalty = -1;
+        }
+        else{
+            rewardTimePenalty = 0;
+        }
+
+        lastMarioX = world.mario.x;
+        //Should be >= if 10 checkpoints are wanted, with only > it never hits the last checkpoint, as that last checkpoint is on the win-tile
+        //It is probably fine still, as the checkpoints are still spaced with 10% of the level apart, and the last checkpoint
+        //then doubles as both a checkpoint and as goal, and conceptually goal is kinda fine as a final checkpoint
+        if (lastMarioX > (float)(currentCheckpoint+1)/checkPoints * world.level.exitTileX*16){
+            currentCheckpoint++;
+            rewardPos = checkPointReward;
+        }
+
+
+        if(world.gameStatus == GameStatus.LOSE) rewardDeathPenalty = -winLooseReward;
+        else if(world.gameStatus == GameStatus.WIN) rewardDeathPenalty = winLooseReward*winMultiplier;
+        else rewardDeathPenalty = 0;
+
+        float reward = rewardPos + rewardTimePenalty + rewardDeathPenalty;
+        reward = Math.max(-winLooseReward, Math.min(winLooseReward*winMultiplier, reward));
+
+        return reward;
+    }
+
+
     public void gameUpdate(){
         if (world.gameStatus == GameStatus.RUNNING) {
             //System.out.println(currentTime);
