@@ -628,8 +628,8 @@ public class MarioGym {
         int rewardTimePenalty = 0;
         int rewardDeathPenalty = 0;
 
-        int winLooseReward = 250;
-        int winMultiplier = 3;
+        int winLooseReward = 750;
+        int winMultiplier = 1;
 
         if(world.currentTick - lastRewardMark == 30){
             lastRewardMark = world.currentTick;
