@@ -184,6 +184,7 @@ public class MarioGym {
         returnVal.state = getObservation();
         //Info values
         returnVal.info = new HashMap<>();
+        returnVal.marioPosition = world.mario.x;
         if(world.gameStatus == GameStatus.WIN) returnVal.info.put("Result", "Win");
         else if (world.gameStatus == GameStatus.LOSE) returnVal.info.put("Result", "Lose");
         returnVal.info.put("Yolo","Swaggins");

@@ -10,6 +10,7 @@ public class StepReturnType {
     float reward;
     boolean done;
     HashMap<String,String> info;
+    float marioPosition;
 
     public byte[] getState(){
         // Set up a ByteBuffer called intBuffer
@@ -39,5 +40,9 @@ public class StepReturnType {
 
     public HashMap<String,String> getInfo(){
         return info;
+    }
+
+    public float getMarioPosition() {
+        return marioPosition;
     }
 }
